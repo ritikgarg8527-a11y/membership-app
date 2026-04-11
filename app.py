@@ -53,32 +53,80 @@ if menu == "Dashboard":
     st.metric("Total Members", len(df))
     st.dataframe(df)
 
-# ---------- ADD ----------
+# ---------- ADD (UPDATED ONLY THIS PART) ----------
 elif menu == "Add":
     st.subheader("➕ Add Member")
 
-    membership = st.text_input("Membership No")
-    fname = st.text_input("First Name")
-    mname = st.text_input("Middle Name")
-    sname = st.text_input("Surname")
-    relation = st.text_input("Relation")
+    member_type = st.selectbox("Primary / Family Member *", ["Primary", "Family"])
 
-    dob = st.date_input(
-        "Date of Birth",
-        min_value=datetime.date(1950, 1, 1),
-        max_value=datetime.date.today()
-    )
+    col1, col2 = st.columns(2)
 
-    phone = st.text_input("Phone No.1")
-    location = st.text_input("Location")
+    with col1:
+        id_ = st.text_input("Id *" if member_type == "Primary" else "Id")
+        user_id = st.text_input("User ID *" if member_type == "Primary" else "User ID")
+        membership = st.text_input("Membership No *" if member_type == "Primary" else "Membership No")
 
-    if st.button("Add"):
+        fname = st.text_input("First Name *")
+        mname = st.text_input("Middle Name")
+        sname = st.text_input("Surname *")
+
+        relation = st.text_input("Relation *" if member_type == "Primary" else "Relation")
+
+    with col2:
+        dob = st.date_input(
+            "Date of Birth *" if member_type == "Primary" else "Date of Birth",
+            min_value=datetime.date(1950, 1, 1),
+            max_value=datetime.date.today()
+        )
+
+        blood = st.text_input("Blood Group *" if member_type == "Primary" else "Blood Group")
+        occupation = st.text_input("Occupation *" if member_type == "Primary" else "Occupation")
+
+        email = st.text_input("Email *" if member_type == "Primary" else "Email")
+        box = st.text_input("Box No.")
+
+        phone1 = st.text_input("Phone No.1 *")
+        phone2 = st.text_input("Phone No.2")
+        phone3 = st.text_input("Phone No.3")
+
+        location = st.text_input("Location *")
+        remarks = st.text_input("Remarks")
+
+    if st.button("Add Member"):
+
+        if member_type == "Primary":
+            if not all([id_, user_id, membership, fname, sname, relation,
+                        blood, occupation, email, phone1, location]):
+                st.error("❌ Fill all required Primary fields")
+                st.stop()
+
+        else:
+            if not all([fname, sname, phone1, location]):
+                st.error("❌ Fill required Family fields")
+                st.stop()
+
         sheet.append_row([
-            "", "", membership, "Primary", fname, mname, sname,
-            relation, str(dob), "", "", "",
-            "", phone, "", "", location, ""
+            id_,
+            user_id,
+            membership,
+            member_type,
+            fname,
+            mname,
+            sname,
+            relation,
+            str(dob),
+            blood,
+            occupation,
+            email,
+            box,
+            phone1,
+            phone2,
+            phone3,
+            location,
+            remarks
         ])
-        st.success("Added Successfully")
+
+        st.success("✅ Member Added Successfully")
         st.rerun()
 
 # ---------- SEARCH / EDIT / DELETE ----------
@@ -94,7 +142,6 @@ elif menu == "Search / Edit / Delete":
         if not result.empty:
             st.success("Records Found ✅")
 
-            # FULL TABLE
             st.dataframe(result.drop(columns=["index"]))
 
             st.divider()
@@ -106,13 +153,11 @@ elif menu == "Search / Edit / Delete":
 
                 col1, col2 = st.columns(2)
 
-                # DELETE
                 if col1.button(f"🗑 Delete {i}"):
                     sheet.delete_rows(int(row["index"]) + 2)
                     st.success("Deleted")
                     st.rerun()
 
-                # EDIT
                 if col2.button(f"✏️ Edit {i}"):
                     st.session_state.edit_row = row
                     st.session_state.edit_index = int(row["index"])
@@ -122,7 +167,7 @@ elif menu == "Search / Edit / Delete":
         else:
             st.error("Not found")
 
-# ---------- FULL EDIT FORM ----------
+# ---------- EDIT ----------
 if "edit_mode" in st.session_state and st.session_state.edit_mode:
 
     row = st.session_state.edit_row
