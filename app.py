@@ -79,6 +79,7 @@ elif menu == "Add":
             "", phone, "", "", location, ""
         ])
         st.success("Added Successfully")
+        st.rerun()
 
 # ---------- SEARCH / EDIT / DELETE ----------
 elif menu == "Search / Edit / Delete":
@@ -105,17 +106,18 @@ elif menu == "Search / Edit / Delete":
 
                 col1, col2 = st.columns(2)
 
-                # DELETE (FIXED)
+                # DELETE
                 if col1.button(f"🗑 Delete {i}"):
                     sheet.delete_rows(int(row["index"]) + 2)
                     st.success("Deleted")
-                    st.experimental_rerun()
+                    st.rerun()
 
-                # EDIT (FIXED)
+                # EDIT
                 if col2.button(f"✏️ Edit {i}"):
                     st.session_state.edit_row = row
                     st.session_state.edit_index = int(row["index"])
                     st.session_state.edit_mode = True
+                    st.rerun()
 
         else:
             st.error("Not found")
@@ -175,4 +177,4 @@ if "edit_mode" in st.session_state and st.session_state.edit_mode:
 
         st.success("✅ Fully Updated")
         st.session_state.edit_mode = False
-        st.experimental_rerun()
+        st.rerun()
