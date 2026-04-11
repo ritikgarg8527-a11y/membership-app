@@ -10,35 +10,42 @@ st.set_page_config(page_title="Membership System", layout="wide")
 # ---------- CUSTOM UI (FIXED DARK MODE) ----------
 st.markdown("""
 <style>
-.main {
-    background-color: #0e1117;
-}
 
-/* CARD */
-.card {
-    padding: 20px;
-    border-radius: 12px;
-    background: #1e1e1e;
-    color: #ffffff;
-    box-shadow: 0px 4px 15px rgba(0,0,0,0.5);
-    margin-bottom: 15px;
-}
-
-/* TEXT */
-.card h3, .card h4 {
-    color: #ffffff;
-    margin-bottom: 5px;
-}
-
-.card p {
-    color: #d1d5db;
-    font-size: 14px;
+/* FULL PAGE DARK */
+html, body, [data-testid="stAppViewContainer"] {
+    background-color: #0e1117 !important;
+    color: white !important;
 }
 
 /* SIDEBAR */
 section[data-testid="stSidebar"] {
-    background-color: #111827;
+    background-color: #111827 !important;
 }
+
+/* CARD FIX (FORCE DARK) */
+.card {
+    padding: 20px;
+    border-radius: 12px;
+    background-color: #1e1e1e !important;
+    color: #ffffff !important;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.6);
+    margin-bottom: 15px;
+}
+
+/* FORCE TEXT */
+.card h3, .card h4 {
+    color: #ffffff !important;
+}
+
+.card p {
+    color: #d1d5db !important;
+}
+
+/* FIX STREAMLIT DEFAULT WHITE BLOCKS */
+div[data-testid="stMarkdownContainer"] {
+    color: white !important;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
