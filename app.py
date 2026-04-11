@@ -28,7 +28,6 @@ if not st.session_state.logged_in:
 # ---------- GOOGLE SHEETS ----------
 scope = ["https://www.googleapis.com/auth/spreadsheets"]
 
-# ✅ FIXED (WORKS ONLINE)
 creds = Credentials.from_service_account_info(
     st.secrets["gcp_service_account"],
     scopes=scope
@@ -44,59 +43,33 @@ data = sheet.get_all_records()
 df = pd.DataFrame(data)
 df.columns = df.columns.str.strip()
 
-st.title("📊 Membership Management System")
+st.title("📊 Membership System")
 
 menu = st.sidebar.selectbox("Menu", ["Dashboard", "Add", "Search / Edit / Delete"])
 
 # ---------- DASHBOARD ----------
 if menu == "Dashboard":
-    st.subheader("📊 Statistics")
+    st.subheader("📊 Dashboard")
 
-    total = len(df)
-    primary = len(df[df["Type"] == "Primary"])
-    family = len(df[df["Type"] == "Family"])
-
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Total Members", total)
-    col2.metric("Primary Members", primary)
-    col3.metric("Family Members", family)
-
+    st.metric("Total Members", len(df))
     st.dataframe(df)
 
 # ---------- ADD ----------
 elif menu == "Add":
     st.subheader("➕ Add Member")
 
-    type_ = st.selectbox("Type", ["Primary", "Family"])
-
-    membership = st.text_input("Membership No *")
-    fname = st.text_input("First Name *")
-    mname = st.text_input("Middle Name")
-    sname = st.text_input("Surname *")
-    relation = st.text_input("Relation *")
-
-    dob = st.date_input(
-        "Date of Birth",
-        min_value=datetime.date(1950, 1, 1),
-        max_value=datetime.date.today()
-    )
-
-    phone = st.text_input("Phone No.1 *")
-    email = st.text_input("Email")
-    location = st.text_input("Location *")
+    membership = st.text_input("Membership No")
+    fname = st.text_input("First Name")
+    sname = st.text_input("Surname")
+    phone = st.text_input("Phone")
+    location = st.text_input("Location")
 
     if st.button("Add"):
-        if not all([membership, fname, sname, relation, phone, location]):
-            st.error("Fill required fields")
-        else:
-            sheet.append_row([
-                "", "", membership, type_, fname, mname, sname,
-                relation, str(dob), "", "", email,
-                "", phone, "", "", location, ""
-            ])
-            st.success("Added Successfully")
+        sheet.append_row(["", "", membership, "Primary", fname, "", sname,
+                          "", "", "", "", "", "", phone, "", "", location, ""])
+        st.success("Added")
 
-# ---------- SEARCH ----------
+# ---------- SEARCH / EDIT / DELETE ----------
 elif menu == "Search / Edit / Delete":
     st.subheader("🔍 Search Member")
 
@@ -107,9 +80,48 @@ elif menu == "Search / Edit / Delete":
         result = result.reset_index()
 
         if not result.empty:
-            st.success("Records Found ✅")
 
-            st.dataframe(result.drop(columns=["index"]))
+            for i in range(len(result)):
+                row = result.loc[i]
+
+                st.markdown("---")
+                st.write("👤 Name:", row["First Name"], row["Surname"])
+                st.write("📞 Phone:", row["Phone No.1"])
+                st.write("📍 Location:", row["LOCATION"])
+
+                col1, col2 = st.columns(2)
+
+                # ---------- DELETE ----------
+                if col1.button(f"🗑 Delete {i}"):
+                    sheet.delete_rows(row["index"] + 2)
+                    st.success("Deleted")
+                    st.experimental_rerun()
+
+                # ---------- EDIT ----------
+                if col2.button(f"✏️ Edit {i}"):
+                    st.session_state.edit_index = row["index"]
+                    st.session_state.edit_mode = True
 
         else:
-            st.error("Not Found ❌")
+            st.error("Not found")
+
+# ---------- EDIT FORM ----------
+if "edit_mode" in st.session_state and st.session_state.edit_mode:
+    st.subheader("✏️ Edit Member")
+
+    index = st.session_state.edit_index + 2
+
+    fname = st.text_input("First Name")
+    sname = st.text_input("Surname")
+    phone = st.text_input("Phone")
+    location = st.text_input("Location")
+
+    if st.button("Update"):
+        sheet.update(f"E{index}", fname)
+        sheet.update(f"G{index}", sname)
+        sheet.update(f"N{index}", phone)
+        sheet.update(f"Q{index}", location)
+
+        st.success("Updated")
+        st.session_state.edit_mode = False
+        st.experimental_rerun()
