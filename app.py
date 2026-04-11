@@ -4,19 +4,40 @@ import gspread
 from google.oauth2.service_account import Credentials
 import datetime
 
-# ---------- PAGE CONFIG (ADDED) ----------
+# ---------- PAGE CONFIG ----------
 st.set_page_config(page_title="Membership System", layout="wide")
 
-# ---------- CUSTOM UI (ADDED) ----------
+# ---------- CUSTOM UI (FIXED DARK MODE) ----------
 st.markdown("""
 <style>
-.main {background-color: #f5f7fa;}
+.main {
+    background-color: #0e1117;
+}
+
+/* CARD */
 .card {
-    padding: 15px;
-    border-radius: 10px;
-    background: white;
-    box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-    margin-bottom: 10px;
+    padding: 20px;
+    border-radius: 12px;
+    background: #1e1e1e;
+    color: #ffffff;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.5);
+    margin-bottom: 15px;
+}
+
+/* TEXT */
+.card h3, .card h4 {
+    color: #ffffff;
+    margin-bottom: 5px;
+}
+
+.card p {
+    color: #d1d5db;
+    font-size: 14px;
+}
+
+/* SIDEBAR */
+section[data-testid="stSidebar"] {
+    background-color: #111827;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -132,30 +153,16 @@ elif menu == "Add":
                 st.stop()
 
         sheet.append_row([
-            id_,
-            user_id,
-            membership,
-            member_type,
-            fname,
-            mname,
-            sname,
-            relation,
-            str(dob),
-            blood,
-            occupation,
-            email,
-            box,
-            phone1,
-            phone2,
-            phone3,
-            location,
-            remarks
+            id_, user_id, membership, member_type,
+            fname, mname, sname, relation,
+            str(dob), blood, occupation, email,
+            box, phone1, phone2, phone3, location, remarks
         ])
 
         st.success("✅ Member Added Successfully")
         st.rerun()
 
-# ---------- SEARCH / EDIT / DELETE ----------
+# ---------- SEARCH ----------
 elif menu == "Search / Edit / Delete":
     st.subheader("🔍 Search Member")
 
@@ -174,8 +181,8 @@ elif menu == "Search / Edit / Delete":
                 st.markdown(f"""
                 <div class='card'>
                 <h3>👤 {p['First Name']} {p['Surname']}</h3>
-                <p>📞 {p['Phone No.1']}</p>
-                <p>📍 {p['LOCATION']}</p>
+                <p>☎️ {p['Phone No.1']}</p>
+                <p>📌 {p['LOCATION']}</p>
                 </div>
                 """, unsafe_allow_html=True)
 
@@ -188,7 +195,7 @@ elif menu == "Search / Edit / Delete":
                 <div class='card'>
                 <h4>👤 {f['First Name']} {f['Surname']}</h4>
                 <p>Relation: {f['Relation']}</p>
-                <p>📞 {f['Phone No.1']}</p>
+                <p>☎️ {f['Phone No.1']}</p>
                 </div>
                 """, unsafe_allow_html=True)
 
