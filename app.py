@@ -50,7 +50,6 @@ menu = st.sidebar.selectbox("Menu", ["Dashboard", "Add", "Search / Edit / Delete
 # ---------- DASHBOARD ----------
 if menu == "Dashboard":
     st.subheader("📊 Dashboard")
-
     st.metric("Total Members", len(df))
     st.dataframe(df)
 
@@ -106,16 +105,16 @@ elif menu == "Search / Edit / Delete":
 
                 col1, col2 = st.columns(2)
 
-                # DELETE
+                # DELETE (FIXED)
                 if col1.button(f"🗑 Delete {i}"):
-                    sheet.delete_rows(row["index"] + 2)
+                    sheet.delete_rows(int(row["index"]) + 2)
                     st.success("Deleted")
                     st.experimental_rerun()
 
-                # EDIT
+                # EDIT (FIXED)
                 if col2.button(f"✏️ Edit {i}"):
                     st.session_state.edit_row = row
-                    st.session_state.edit_index = row["index"]
+                    st.session_state.edit_index = int(row["index"])
                     st.session_state.edit_mode = True
 
         else:
@@ -125,7 +124,7 @@ elif menu == "Search / Edit / Delete":
 if "edit_mode" in st.session_state and st.session_state.edit_mode:
 
     row = st.session_state.edit_row
-    index = st.session_state.edit_index + 2
+    index = int(st.session_state.edit_index) + 2
 
     st.subheader("✏️ Edit Full Member")
 
