@@ -7,7 +7,7 @@ import datetime
 # ---------- PAGE CONFIG ----------
 st.set_page_config(page_title="Membership System", layout="wide")
 
-# ---------- CUSTOM UI (FIXED DARK MODE) ----------
+# ---------- CUSTOM UI ----------
 st.markdown("""
 <style>
 
@@ -22,7 +22,7 @@ section[data-testid="stSidebar"] {
     background-color: #111827 !important;
 }
 
-/* CARD FIX (FORCE DARK) */
+/* CARD */
 .card {
     padding: 20px;
     border-radius: 12px;
@@ -32,18 +32,13 @@ section[data-testid="stSidebar"] {
     margin-bottom: 15px;
 }
 
-/* FORCE TEXT */
+/* TEXT */
 .card h3, .card h4 {
     color: #ffffff !important;
 }
 
 .card p {
     color: #d1d5db !important;
-}
-
-/* FIX STREAMLIT DEFAULT WHITE BLOCKS */
-div[data-testid="stMarkdownContainer"] {
-    color: white !important;
 }
 
 </style>
@@ -169,7 +164,7 @@ elif menu == "Add":
         st.success("✅ Member Added Successfully")
         st.rerun()
 
-# ---------- SEARCH ----------
+# ---------- SEARCH / EDIT / DELETE ----------
 elif menu == "Search / Edit / Delete":
     st.subheader("🔍 Search Member")
 
@@ -181,6 +176,7 @@ elif menu == "Search / Edit / Delete":
         if not group.empty:
             st.success("Records Found ✅")
 
+            # PRIMARY
             primary = group[group["Type"] == "Primary"]
             if not primary.empty:
                 p = primary.iloc[0]
@@ -193,6 +189,20 @@ elif menu == "Search / Edit / Delete":
                 </div>
                 """, unsafe_allow_html=True)
 
+                col1, col2 = st.columns(2)
+
+                if col1.button("🗑 Delete Primary"):
+                    sheet.delete_rows(int(p.name) + 2)
+                    st.success("Deleted")
+                    st.rerun()
+
+                if col2.button("✏️ Edit Primary"):
+                    st.session_state.edit_row = p
+                    st.session_state.edit_index = int(p.name)
+                    st.session_state.edit_mode = True
+                    st.rerun()
+
+            # FAMILY
             family = group[group["Type"] == "Family"]
 
             for i in range(len(family)):
@@ -206,6 +216,20 @@ elif menu == "Search / Edit / Delete":
                 </div>
                 """, unsafe_allow_html=True)
 
+                col1, col2 = st.columns(2)
+
+                if col1.button(f"🗑 Delete Family {i}"):
+                    sheet.delete_rows(int(f.name) + 2)
+                    st.success("Deleted")
+                    st.rerun()
+
+                if col2.button(f"✏️ Edit Family {i}"):
+                    st.session_state.edit_row = f
+                    st.session_state.edit_index = int(f.name)
+                    st.session_state.edit_mode = True
+                    st.rerun()
+
+            st.divider()
             st.dataframe(group)
 
         else:
