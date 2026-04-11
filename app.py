@@ -53,7 +53,7 @@ if menu == "Dashboard":
     st.metric("Total Members", len(df))
     st.dataframe(df)
 
-# ---------- ADD (UPDATED ONLY THIS PART) ----------
+# ---------- ADD ----------
 elif menu == "Add":
     st.subheader("➕ Add Member")
 
@@ -99,7 +99,6 @@ elif menu == "Add":
                         blood, occupation, email, phone1, location]):
                 st.error("❌ Fill all required Primary fields")
                 st.stop()
-
         else:
             if not all([fname, sname, phone1, location]):
                 st.error("❌ Fill required Family fields")
@@ -136,33 +135,67 @@ elif menu == "Search / Edit / Delete":
     m = st.text_input("Enter Membership No")
 
     if m:
-        result = df[df["MemberShip No"].astype(str) == m]
-        result = result.reset_index()
+        group = df[df["MemberShip No"].astype(str) == m]
 
-        if not result.empty:
+        if not group.empty:
             st.success("Records Found ✅")
 
-            st.dataframe(result.drop(columns=["index"]))
+            # PRIMARY
+            primary = group[group["Type"] == "Primary"]
+            if not primary.empty:
+                p = primary.iloc[0]
 
-            st.divider()
-
-            for i in range(len(result)):
-                row = result.loc[i]
-
-                st.markdown(f"### 👤 {row['First Name']} {row['Surname']}")
+                st.markdown("## 👤 Primary Member")
+                st.success(f"{p['First Name']} {p['Surname']}")
+                st.write("📞", p["Phone No.1"])
+                st.write("📍", p["LOCATION"])
 
                 col1, col2 = st.columns(2)
 
-                if col1.button(f"🗑 Delete {i}"):
-                    sheet.delete_rows(int(row["index"]) + 2)
-                    st.success("Deleted")
+                if col1.button("🗑 Delete Primary"):
+                    index = int(p.name) + 2
+                    sheet.delete_rows(index)
+                    st.success("Primary Deleted")
                     st.rerun()
 
-                if col2.button(f"✏️ Edit {i}"):
-                    st.session_state.edit_row = row
-                    st.session_state.edit_index = int(row["index"])
+                if col2.button("✏️ Edit Primary"):
+                    st.session_state.edit_row = p
+                    st.session_state.edit_index = int(p.name)
                     st.session_state.edit_mode = True
                     st.rerun()
+
+            # FAMILY
+            family = group[group["Type"] == "Family"]
+
+            if not family.empty:
+                st.markdown("## 👨‍👩‍👧 Family Members")
+
+                for i in range(len(family)):
+                    f = family.iloc[i]
+
+                    st.markdown(f"### 👤 {f['First Name']} {f['Surname']}")
+                    st.write("Relation:", f["Relation"])
+                    st.write("Phone:", f["Phone No.1"])
+
+                    col1, col2 = st.columns(2)
+
+                    if col1.button(f"🗑 Delete Family {i}"):
+                        index = int(f.name) + 2
+                        sheet.delete_rows(index)
+                        st.success("Deleted")
+                        st.rerun()
+
+                    if col2.button(f"✏️ Edit Family {i}"):
+                        st.session_state.edit_row = f
+                        st.session_state.edit_index = int(f.name)
+                        st.session_state.edit_mode = True
+                        st.rerun()
+
+            st.divider()
+
+            st.markdown("## 📋 Full Data")
+            result = group.reset_index()
+            st.dataframe(result.drop(columns=["index"]))
 
         else:
             st.error("Not found")
