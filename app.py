@@ -4,6 +4,23 @@ import gspread
 from google.oauth2.service_account import Credentials
 import datetime
 
+# ---------- PAGE CONFIG (ADDED) ----------
+st.set_page_config(page_title="Membership System", layout="wide")
+
+# ---------- CUSTOM UI (ADDED) ----------
+st.markdown("""
+<style>
+.main {background-color: #f5f7fa;}
+.card {
+    padding: 15px;
+    border-radius: 10px;
+    background: white;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+    margin-bottom: 10px;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # ---------- LOGIN ----------
 USERNAME = "admin"
 PASSWORD = "1234"
@@ -50,7 +67,17 @@ menu = st.sidebar.selectbox("Menu", ["Dashboard", "Add", "Search / Edit / Delete
 # ---------- DASHBOARD ----------
 if menu == "Dashboard":
     st.subheader("📊 Dashboard")
-    st.metric("Total Members", len(df))
+
+    col1, col2, col3 = st.columns(3)
+
+    total = len(df)
+    primary = len(df[df["Type"] == "Primary"])
+    family = len(df[df["Type"] == "Family"])
+
+    col1.markdown(f"<div class='card'>📊 <h2>{total}</h2>Total Members</div>", unsafe_allow_html=True)
+    col2.markdown(f"<div class='card'>👤 <h2>{primary}</h2>Primary Members</div>", unsafe_allow_html=True)
+    col3.markdown(f"<div class='card'>👨‍👩‍👧 <h2>{family}</h2>Family Members</div>", unsafe_allow_html=True)
+
     st.dataframe(df)
 
 # ---------- ADD ----------
@@ -140,62 +167,32 @@ elif menu == "Search / Edit / Delete":
         if not group.empty:
             st.success("Records Found ✅")
 
-            # PRIMARY
             primary = group[group["Type"] == "Primary"]
             if not primary.empty:
                 p = primary.iloc[0]
 
-                st.markdown("## 👤 Primary Member")
-                st.success(f"{p['First Name']} {p['Surname']}")
-                st.write("📞", p["Phone No.1"])
-                st.write("📍", p["LOCATION"])
+                st.markdown(f"""
+                <div class='card'>
+                <h3>👤 {p['First Name']} {p['Surname']}</h3>
+                <p>📞 {p['Phone No.1']}</p>
+                <p>📍 {p['LOCATION']}</p>
+                </div>
+                """, unsafe_allow_html=True)
 
-                col1, col2 = st.columns(2)
-
-                if col1.button("🗑 Delete Primary"):
-                    index = int(p.name) + 2
-                    sheet.delete_rows(index)
-                    st.success("Primary Deleted")
-                    st.rerun()
-
-                if col2.button("✏️ Edit Primary"):
-                    st.session_state.edit_row = p
-                    st.session_state.edit_index = int(p.name)
-                    st.session_state.edit_mode = True
-                    st.rerun()
-
-            # FAMILY
             family = group[group["Type"] == "Family"]
 
-            if not family.empty:
-                st.markdown("## 👨‍👩‍👧 Family Members")
+            for i in range(len(family)):
+                f = family.iloc[i]
 
-                for i in range(len(family)):
-                    f = family.iloc[i]
+                st.markdown(f"""
+                <div class='card'>
+                <h4>👤 {f['First Name']} {f['Surname']}</h4>
+                <p>Relation: {f['Relation']}</p>
+                <p>📞 {f['Phone No.1']}</p>
+                </div>
+                """, unsafe_allow_html=True)
 
-                    st.markdown(f"### 👤 {f['First Name']} {f['Surname']}")
-                    st.write("Relation:", f["Relation"])
-                    st.write("Phone:", f["Phone No.1"])
-
-                    col1, col2 = st.columns(2)
-
-                    if col1.button(f"🗑 Delete Family {i}"):
-                        index = int(f.name) + 2
-                        sheet.delete_rows(index)
-                        st.success("Deleted")
-                        st.rerun()
-
-                    if col2.button(f"✏️ Edit Family {i}"):
-                        st.session_state.edit_row = f
-                        st.session_state.edit_index = int(f.name)
-                        st.session_state.edit_mode = True
-                        st.rerun()
-
-            st.divider()
-
-            st.markdown("## 📋 Full Data")
-            result = group.reset_index()
-            st.dataframe(result.drop(columns=["index"]))
+            st.dataframe(group)
 
         else:
             st.error("Not found")
