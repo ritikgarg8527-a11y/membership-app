@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import gspread
 from google.oauth2.service_account import Credentials
-import datetime
 
 # ---------- PAGE CONFIG ----------
 st.set_page_config(page_title="Membership System", layout="wide")
@@ -77,21 +76,77 @@ if menu == "Dashboard":
 
 # ---------- ADD ----------
 elif menu == "Add":
-    st.subheader("Add Member")
+    st.subheader("➕ Add Member")
 
-    fname = st.text_input("First Name")
-    sname = st.text_input("Surname")
-    phone = st.text_input("Phone")
-    location = st.text_input("Location")
+    member_type = st.selectbox("Select Member Type", ["Primary", "Family"])
 
-    if st.button("Add"):
+    col1, col2 = st.columns(2)
+
+    with col1:
+        id_ = st.text_input("Id *")
+        user_id = st.text_input("User ID *")
+        membership = st.text_input("Membership No *")
+
+        fname = st.text_input("First Name *")
+        mname = st.text_input("Middle Name")
+        sname = st.text_input("Surname *")
+
+        relation = st.text_input("Relation")
+
+    with col2:
+        dob = st.text_input("Date of Birth")
+        blood = st.text_input("Blood Group")
+        occupation = st.text_input("Occupation")
+
+        email = st.text_input("Email")
+        box = st.text_input("Box No")
+
+        phone1 = st.text_input("Phone No.1 *")
+        phone2 = st.text_input("Phone No.2")
+        phone3 = st.text_input("Phone No.3")
+
+        location = st.text_input("Location *")
+        remarks = st.text_input("Remarks")
+
+    if st.button("Add Member"):
+
+        # VALIDATION
+        if member_type == "Primary":
+            if not (id_ and user_id and membership and fname and sname and phone1 and location):
+                st.error("Fill all required fields for Primary")
+                st.stop()
+
+        if member_type == "Family":
+            if not (fname and sname and phone1 and location):
+                st.error("Fill required fields for Family")
+                st.stop()
+
         sheet.append_row([
-            "", "", "", "Primary",
-            fname, "", sname, "",
-            "", "", "", "",
-            "", phone, "", "", location, ""
+            clean(id_),
+            clean(user_id),
+            clean(membership),
+            member_type,
+
+            clean(fname),
+            clean(mname),
+            clean(sname),
+            clean(relation),
+
+            clean(dob),
+            clean(blood),
+            clean(occupation),
+            clean(email),
+
+            clean(box),
+            clean(phone1),
+            clean(phone2),
+            clean(phone3),
+
+            clean(location),
+            clean(remarks)
         ])
-        st.success("Added")
+
+        st.success(f"✅ {member_type} Member Added Successfully")
         st.rerun()
 
 # ---------- SEARCH ----------
@@ -120,11 +175,9 @@ elif menu == "Search":
                     </div>
                     """, unsafe_allow_html=True)
 
-                # EDIT
                 if col2.button(f"✏️ {i}"):
                     st.session_state.edit_index = int(row.name)
 
-                # DELETE
                 if col3.button(f"🗑 {i}"):
                     st.session_state.delete_index = int(row.name)
 
@@ -143,7 +196,7 @@ elif menu == "Search":
                         del st.session_state.delete_index
                         st.rerun()
 
-                # ---------- INLINE EDIT ----------
+                # EDIT
                 if "edit_index" in st.session_state and st.session_state.edit_index == int(row.name):
 
                     st.markdown("### ✏️ Edit Full Details")
@@ -200,7 +253,6 @@ elif menu == "Search":
                         del st.session_state.edit_index
                         st.rerun()
 
-            # ---------- TABLE ----------
             st.markdown("### 📋 Full Data")
             st.dataframe(group)
 
