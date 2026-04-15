@@ -7,7 +7,7 @@ import datetime
 # ---------- PAGE CONFIG ----------
 st.set_page_config(page_title="Membership System", layout="wide")
 
-# ---------- SAFE UI (NO THEME BREAK) ----------
+# ---------- SAFE UI ----------
 st.markdown("""
 <style>
 .card {
@@ -58,6 +58,12 @@ sheet = client.open_by_url(
 data = sheet.get_all_records()
 df = pd.DataFrame(data)
 df.columns = df.columns.str.strip()
+
+# ---------- CLEAN FUNCTION ----------
+def clean(x):
+    if pd.isna(x):
+        return ""
+    return str(x)
 
 # ---------- HEADER ----------
 st.title("🏢 Membership System")
@@ -114,23 +120,30 @@ elif menu == "Search":
                     </div>
                     """, unsafe_allow_html=True)
 
-                # EDIT BUTTON
+                # EDIT
                 if col2.button(f"✏️ {i}"):
                     st.session_state.edit_index = int(row.name)
 
-                # DELETE BUTTON
+                # DELETE
                 if col3.button(f"🗑 {i}"):
                     st.session_state.delete_index = int(row.name)
 
-                # ---------- DELETE CONFIRM ----------
+                # DELETE CONFIRM
                 if "delete_index" in st.session_state and st.session_state.delete_index == int(row.name):
-                    st.warning("Confirm delete?")
-                    if st.button(f"Yes Delete {i}"):
-                        sheet.delete_rows(int(row.name)+2)
+                    st.warning("⚠️ Confirm Delete?")
+                    c1, c2 = st.columns(2)
+
+                    if c1.button(f"Yes Delete {i}"):
+                        sheet.delete_rows(int(row.name) + 2)
+                        del st.session_state.delete_index
+                        st.success("Deleted")
+                        st.rerun()
+
+                    if c2.button("Cancel"):
                         del st.session_state.delete_index
                         st.rerun()
 
-                # ---------- FULL EDIT FORM ----------
+                # ---------- INLINE EDIT ----------
                 if "edit_index" in st.session_state and st.session_state.edit_index == int(row.name):
 
                     st.markdown("### ✏️ Edit Full Details")
@@ -140,7 +153,7 @@ elif menu == "Search":
                     sname = st.text_input("Surname", row["Surname"], key=f"s{i}")
                     relation = st.text_input("Relation", row["Relation"], key=f"r{i}")
 
-                    dob = st.text_input("DOB", row["DateOfBirth"], key=f"d{i}")
+                    dob = st.text_input("DOB", clean(row["DateOfBirth"]), key=f"d{i}")
                     blood = st.text_input("Blood Group", row["Blood Group"], key=f"b{i}")
                     occupation = st.text_input("Occupation", row["Occupation"], key=f"o{i}")
 
@@ -152,25 +165,42 @@ elif menu == "Search":
                     location = st.text_input("Location", row["LOCATION"], key=f"l{i}")
                     remarks = st.text_input("Remarks", row["Remarks"], key=f"re{i}")
 
-                    if st.button(f"Save {i}"):
+                    if st.button(f"💾 Save {i}"):
 
                         idx = int(row.name) + 2
 
                         row_data = [
-                            row["Id"], row["user_id"], row["MemberShip No"], row["Type"],
-                            fname, mname, sname, relation,
-                            dob, blood, occupation, email,
-                            row["Box No."], phone1, phone2, phone3,
-                            location, remarks
+                            clean(row["Id"]),
+                            clean(row["user_id"]),
+                            clean(row["MemberShip No"]),
+                            clean(row["Type"]),
+
+                            clean(fname),
+                            clean(mname),
+                            clean(sname),
+                            clean(relation),
+
+                            clean(dob),
+                            clean(blood),
+                            clean(occupation),
+                            clean(email),
+
+                            clean(row["Box No."]),
+                            clean(phone1),
+                            clean(phone2),
+                            clean(phone3),
+
+                            clean(location),
+                            clean(remarks)
                         ]
 
                         sheet.update(f"A{idx}:R{idx}", [row_data])
 
-                        st.success("Updated")
+                        st.success("✅ Updated Successfully")
                         del st.session_state.edit_index
                         st.rerun()
 
-            # ---------- TABLE BACK ----------
+            # ---------- TABLE ----------
             st.markdown("### 📋 Full Data")
             st.dataframe(group)
 
