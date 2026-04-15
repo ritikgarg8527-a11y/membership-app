@@ -7,35 +7,24 @@ import datetime
 # ---------- PAGE CONFIG ----------
 st.set_page_config(page_title="Membership System", layout="wide")
 
-# ---------- THEME UI ----------
+# ---------- SAFE UI (NO THEME BREAK) ----------
 st.markdown("""
 <style>
-html[data-theme="light"] body {
-    background-color: #f8fafc !important;
-}
-html[data-theme="dark"] body {
-    background-color: #0e1117 !important;
-}
-
 .card {
-    padding: 18px;
-    border-radius: 12px;
-    box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
-    margin-bottom: 12px;
-    background: white;
+    padding: 16px;
+    border-radius: 10px;
+    border: 1px solid rgba(128,128,128,0.2);
+    margin-bottom: 10px;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # ---------- LOGIN ----------
-USERS = {
-    "admin": {"password": "1234"},
-    "staff1": {"password": "1111"}
-}
+USERNAME = "admin"
+PASSWORD = "1234"
 
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
-    st.session_state.username = ""
 
 if not st.session_state.logged_in:
     st.title("🔐 Login")
@@ -44,9 +33,8 @@ if not st.session_state.logged_in:
     p = st.text_input("Password", type="password")
 
     if st.button("Login"):
-        if u in USERS and USERS[u]["password"] == p:
+        if u == USERNAME and p == PASSWORD:
             st.session_state.logged_in = True
-            st.session_state.username = u
             st.rerun()
         else:
             st.error("Invalid login")
@@ -67,25 +55,18 @@ sheet = client.open_by_url(
     "https://docs.google.com/spreadsheets/d/1CWKJgqVShCbatUJoUWHl6w2VCiL9Xy0LXZzXBL1npRs"
 ).sheet1
 
-# 👉 Activity Sheet (create manually named "Activity")
-try:
-    activity_sheet = client.open_by_url(
-        "https://docs.google.com/spreadsheets/d/1CWKJgqVShCbatUJoUWHl6w2VCiL9Xy0LXZzXBL1npRs"
-    ).worksheet("Activity")
-except:
-    activity_sheet = None
-
 data = sheet.get_all_records()
 df = pd.DataFrame(data)
 df.columns = df.columns.str.strip()
 
+# ---------- HEADER ----------
 st.title("🏢 Membership System")
 
 menu = st.sidebar.selectbox("Menu", ["Dashboard", "Add", "Search"])
 
 # ---------- DASHBOARD ----------
 if menu == "Dashboard":
-    st.subheader("Dashboard")
+    st.subheader("All Members")
     st.dataframe(df)
 
 # ---------- ADD ----------
@@ -105,6 +86,7 @@ elif menu == "Add":
             "", phone, "", "", location, ""
         ])
         st.success("Added")
+        st.rerun()
 
 # ---------- SEARCH ----------
 elif menu == "Search":
@@ -116,6 +98,8 @@ elif menu == "Search":
 
         if not group.empty:
 
+            st.success("Records Found")
+
             for i in range(len(group)):
                 row = group.iloc[i]
 
@@ -124,52 +108,49 @@ elif menu == "Search":
                 with col1:
                     st.markdown(f"""
                     <div class='card'>
-                    <h4>{row['First Name']} {row['Surname']}</h4>
-                    <p>{row['Phone No.1']} | {row['LOCATION']}</p>
+                    <b>{row['First Name']} {row['Surname']} ({row['Type']})</b><br>
+                    📞 {row['Phone No.1']} <br>
+                    📍 {row['LOCATION']}
                     </div>
                     """, unsafe_allow_html=True)
 
-                # EDIT
+                # EDIT BUTTON
                 if col2.button(f"✏️ {i}"):
                     st.session_state.edit_index = int(row.name)
 
-                # DELETE CONFIRM
+                # DELETE BUTTON
                 if col3.button(f"🗑 {i}"):
                     st.session_state.delete_index = int(row.name)
 
                 # ---------- DELETE CONFIRM ----------
                 if "delete_index" in st.session_state and st.session_state.delete_index == int(row.name):
-                    st.warning("⚠️ Confirm Delete?")
-                    c1, c2 = st.columns(2)
-
-                    if c1.button(f"Yes Delete {i}"):
-                        sheet.delete_rows(int(row.name) + 2)
-
-                        if activity_sheet:
-                            activity_sheet.append_row([
-                                datetime.datetime.now(),
-                                st.session_state.username,
-                                "DELETE",
-                                row["First Name"]
-                            ])
-
-                        st.success("Deleted")
+                    st.warning("Confirm delete?")
+                    if st.button(f"Yes Delete {i}"):
+                        sheet.delete_rows(int(row.name)+2)
                         del st.session_state.delete_index
                         st.rerun()
 
-                    if c2.button("Cancel"):
-                        del st.session_state.delete_index
-                        st.rerun()
-
-                # ---------- INLINE EDIT ----------
+                # ---------- FULL EDIT FORM ----------
                 if "edit_index" in st.session_state and st.session_state.edit_index == int(row.name):
 
-                    st.markdown("### Edit Member")
+                    st.markdown("### ✏️ Edit Full Details")
 
                     fname = st.text_input("First Name", row["First Name"], key=f"f{i}")
+                    mname = st.text_input("Middle Name", row["MiddleName"], key=f"m{i}")
                     sname = st.text_input("Surname", row["Surname"], key=f"s{i}")
-                    phone = st.text_input("Phone", row["Phone No.1"], key=f"p{i}")
+                    relation = st.text_input("Relation", row["Relation"], key=f"r{i}")
+
+                    dob = st.text_input("DOB", row["DateOfBirth"], key=f"d{i}")
+                    blood = st.text_input("Blood Group", row["Blood Group"], key=f"b{i}")
+                    occupation = st.text_input("Occupation", row["Occupation"], key=f"o{i}")
+
+                    email = st.text_input("Email", row["E-mail"], key=f"e{i}")
+                    phone1 = st.text_input("Phone1", row["Phone No.1"], key=f"p1{i}")
+                    phone2 = st.text_input("Phone2", row["Phone No.2"], key=f"p2{i}")
+                    phone3 = st.text_input("Phone3", row["Phone No.3"], key=f"p3{i}")
+
                     location = st.text_input("Location", row["LOCATION"], key=f"l{i}")
+                    remarks = st.text_input("Remarks", row["Remarks"], key=f"re{i}")
 
                     if st.button(f"Save {i}"):
 
@@ -177,25 +158,21 @@ elif menu == "Search":
 
                         row_data = [
                             row["Id"], row["user_id"], row["MemberShip No"], row["Type"],
-                            fname, "", sname, "",
-                            row["DateOfBirth"], row["Blood Group"], row["Occupation"], row["E-mail"],
-                            row["Box No."], phone, "", "", location, row["Remarks"]
+                            fname, mname, sname, relation,
+                            dob, blood, occupation, email,
+                            row["Box No."], phone1, phone2, phone3,
+                            location, remarks
                         ]
 
                         sheet.update(f"A{idx}:R{idx}", [row_data])
 
-                        # ---------- ACTIVITY LOG ----------
-                        if activity_sheet:
-                            activity_sheet.append_row([
-                                datetime.datetime.now(),
-                                st.session_state.username,
-                                "EDIT",
-                                fname
-                            ])
-
                         st.success("Updated")
                         del st.session_state.edit_index
                         st.rerun()
+
+            # ---------- TABLE BACK ----------
+            st.markdown("### 📋 Full Data")
+            st.dataframe(group)
 
         else:
             st.error("No data found")
