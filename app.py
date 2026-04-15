@@ -71,7 +71,19 @@ menu = st.sidebar.selectbox("Menu", ["Dashboard", "Add", "Search"])
 
 # ---------- DASHBOARD ----------
 if menu == "Dashboard":
-    st.subheader("All Members")
+    st.subheader("📊 Dashboard Overview")
+
+    col1, col2, col3 = st.columns(3)
+
+    total = len(df)
+    primary = len(df[df["Type"] == "Primary"])
+    family = len(df[df["Type"] == "Family"])
+
+    col1.markdown(f"<div class='card'><h3>Total Members</h3><h2>{total}</h2></div>", unsafe_allow_html=True)
+    col2.markdown(f"<div class='card'><h3>Primary Members</h3><h2>{primary}</h2></div>", unsafe_allow_html=True)
+    col3.markdown(f"<div class='card'><h3>Family Members</h3><h2>{family}</h2></div>", unsafe_allow_html=True)
+
+    st.markdown("### 📋 Full Data")
     st.dataframe(df)
 
 # ---------- ADD ----------
@@ -110,7 +122,6 @@ elif menu == "Add":
 
     if st.button("Add Member"):
 
-        # VALIDATION
         if member_type == "Primary":
             if not (id_ and user_id and membership and fname and sname and phone1 and location):
                 st.error("Fill all required fields for Primary")
