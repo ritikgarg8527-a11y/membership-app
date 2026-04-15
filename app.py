@@ -7,39 +7,47 @@ import datetime
 # ---------- PAGE CONFIG ----------
 st.set_page_config(page_title="Membership System", layout="wide")
 
-# ---------- PROFESSIONAL LIGHT UI ----------
+# ---------- THEME SAFE UI ----------
 st.markdown("""
 <style>
 
-/* LIGHT CLEAN BACKGROUND */
-html, body, [data-testid="stAppViewContainer"] {
+/* LIGHT MODE */
+html[data-theme="light"] body {
     background-color: #f8fafc !important;
-    color: #1e293b !important;
 }
-
-/* SIDEBAR */
-section[data-testid="stSidebar"] {
-    background-color: #ffffff !important;
-}
-
-/* CARD */
-.card {
-    padding: 20px;
-    border-radius: 12px;
+html[data-theme="light"] .card {
     background-color: #ffffff !important;
     color: #111827 !important;
-    box-shadow: 0px 4px 12px rgba(0,0,0,0.08);
+}
+
+/* DARK MODE */
+html[data-theme="dark"] body {
+    background-color: #0e1117 !important;
+}
+html[data-theme="dark"] .card {
+    background-color: #1e293b !important;
+    color: #e5e7eb !important;
+}
+
+/* COMMON CARD */
+.card {
+    padding: 18px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
     margin-bottom: 12px;
 }
 
 /* TEXT */
 .card h3, .card h4 {
-    color: #111827 !important;
+    font-weight: 600;
+}
+.card p {
+    font-size: 14px;
 }
 
-.card p {
-    color: #475569 !important;
-    font-size: 14px;
+/* SIDEBAR */
+section[data-testid="stSidebar"] {
+    background-color: inherit !important;
 }
 
 </style>
@@ -54,7 +62,6 @@ if "logged_in" not in st.session_state:
 
 if not st.session_state.logged_in:
     st.title("🔐 Admin Login")
-
     u = st.text_input("Username")
     p = st.text_input("Password", type="password")
 
@@ -84,7 +91,9 @@ data = sheet.get_all_records()
 df = pd.DataFrame(data)
 df.columns = df.columns.str.strip()
 
+# ---------- HEADER ----------
 st.title("🏢 Membership Management System")
+st.caption("Professional Membership Dashboard")
 
 menu = st.sidebar.selectbox("Menu", ["Dashboard", "Add", "Search / Edit / Delete"])
 
@@ -94,13 +103,9 @@ if menu == "Dashboard":
 
     col1, col2, col3 = st.columns(3)
 
-    total = len(df)
-    primary = len(df[df["Type"] == "Primary"])
-    family = len(df[df["Type"] == "Family"])
-
-    col1.markdown(f"<div class='card'><h3>📊 Total</h3><h2>{total}</h2></div>", unsafe_allow_html=True)
-    col2.markdown(f"<div class='card'><h3>👤 Primary</h3><h2>{primary}</h2></div>", unsafe_allow_html=True)
-    col3.markdown(f"<div class='card'><h3>👨‍👩‍👧 Family</h3><h2>{family}</h2></div>", unsafe_allow_html=True)
+    col1.markdown(f"<div class='card'><h3>Total</h3><h2>{len(df)}</h2></div>", unsafe_allow_html=True)
+    col2.markdown(f"<div class='card'><h3>Primary</h3><h2>{len(df[df['Type']=='Primary'])}</h2></div>", unsafe_allow_html=True)
+    col3.markdown(f"<div class='card'><h3>Family</h3><h2>{len(df[df['Type']=='Family'])}</h2></div>", unsafe_allow_html=True)
 
     st.dataframe(df)
 
@@ -108,50 +113,47 @@ if menu == "Dashboard":
 elif menu == "Add":
     st.subheader("➕ Add Member")
 
-    member_type = st.selectbox("Primary / Family Member *", ["Primary", "Family"])
+    member_type = st.selectbox("Primary / Family Member", ["Primary", "Family"])
 
     col1, col2 = st.columns(2)
 
     with col1:
         id_ = st.text_input("Id")
         user_id = st.text_input("User ID")
-        membership = st.text_input("Membership No *")
+        membership = st.text_input("Membership No")
 
-        fname = st.text_input("First Name *")
+        fname = st.text_input("First Name")
         mname = st.text_input("Middle Name")
-        sname = st.text_input("Surname *")
+        sname = st.text_input("Surname")
 
         relation = st.text_input("Relation")
 
     with col2:
-        dob = st.date_input("Date of Birth")
+        dob = st.date_input("DOB")
         blood = st.text_input("Blood Group")
         occupation = st.text_input("Occupation")
 
         email = st.text_input("Email")
-        box = st.text_input("Box No.")
+        box = st.text_input("Box")
 
-        phone1 = st.text_input("Phone No.1 *")
-        phone2 = st.text_input("Phone No.2")
-        phone3 = st.text_input("Phone No.3")
+        phone1 = st.text_input("Phone 1")
+        phone2 = st.text_input("Phone 2")
+        phone3 = st.text_input("Phone 3")
 
-        location = st.text_input("Location *")
+        location = st.text_input("Location")
         remarks = st.text_input("Remarks")
 
-    if st.button("Add Member"):
-        if not all([fname, sname, phone1, location]):
-            st.error("Required fields missing")
-        else:
-            sheet.append_row([
-                id_, user_id, membership, member_type,
-                fname, mname, sname, relation,
-                str(dob), blood, occupation, email,
-                box, phone1, phone2, phone3, location, remarks
-            ])
-            st.success("✅ Added")
-            st.rerun()
+    if st.button("Add"):
+        sheet.append_row([
+            id_, user_id, membership, member_type,
+            fname, mname, sname, relation,
+            str(dob), blood, occupation, email,
+            box, phone1, phone2, phone3, location, remarks
+        ])
+        st.success("Added")
+        st.rerun()
 
-# ---------- SEARCH ----------
+# ---------- SEARCH / EDIT / DELETE ----------
 elif menu == "Search / Edit / Delete":
     st.subheader("🔍 Search Member")
 
@@ -162,78 +164,72 @@ elif menu == "Search / Edit / Delete":
 
         if not group.empty:
 
-            # PRIMARY
-            primary = group[group["Type"] == "Primary"]
-
-            if not primary.empty:
-                p = primary.iloc[0]
+            for i in range(len(group)):
+                row = group.iloc[i]
 
                 colA, colB = st.columns([4,1])
 
                 with colA:
                     st.markdown(f"""
                     <div class='card'>
-                    <h3>👤 {p['First Name']} {p['Surname']}</h3>
-                    <p>☎️ {p['Phone No.1']}</p>
-                    <p>📍 {p['LOCATION']}</p>
-                    </div>
-                    """, unsafe_allow_html=True)
-
-                with colB:
-                    if st.button("✏️ Edit Primary"):
-                        st.session_state.edit_row = p
-                        st.session_state.edit_index = int(p.name)
-                        st.session_state.edit_mode = True
-                        st.rerun()
-
-            # FAMILY
-            family = group[group["Type"] == "Family"]
-
-            for i in range(len(family)):
-                f = family.iloc[i]
-
-                colA, colB = st.columns([4,1])
-
-                with colA:
-                    st.markdown(f"""
-                    <div class='card'>
-                    <h4>👤 {f['First Name']} {f['Surname']}</h4>
-                    <p>Relation: {f['Relation']}</p>
-                    <p>☎️ {f['Phone No.1']}</p>
+                    <h4>👤 {row['First Name']} {row['Surname']} ({row['Type']})</h4>
+                    <p>📞 {row['Phone No.1']} | 📍 {row['LOCATION']}</p>
                     </div>
                     """, unsafe_allow_html=True)
 
                 with colB:
                     if st.button(f"✏️ Edit {i}"):
-                        st.session_state.edit_row = f
-                        st.session_state.edit_index = int(f.name)
-                        st.session_state.edit_mode = True
+                        st.session_state.edit_index = int(row.name)
+
+                    if st.button(f"🗑 Delete {i}"):
+                        sheet.delete_rows(int(row.name) + 2)
+                        st.success("Deleted")
+                        st.rerun()
+
+                # ---------- INLINE EDIT ----------
+                if "edit_index" in st.session_state and st.session_state.edit_index == int(row.name):
+
+                    st.markdown("### ✏️ Edit Details")
+
+                    fname = st.text_input("First Name", row["First Name"], key=f"fname{i}")
+                    mname = st.text_input("Middle Name", row["MiddleName"], key=f"mname{i}")
+                    sname = st.text_input("Surname", row["Surname"], key=f"sname{i}")
+                    relation = st.text_input("Relation", row["Relation"], key=f"rel{i}")
+
+                    dob = st.text_input("DOB", row["DateOfBirth"], key=f"dob{i}")
+                    blood = st.text_input("Blood", row["Blood Group"], key=f"blood{i}")
+                    occupation = st.text_input("Occupation", row["Occupation"], key=f"occ{i}")
+
+                    email = st.text_input("Email", row["E-mail"], key=f"email{i}")
+                    phone1 = st.text_input("Phone1", row["Phone No.1"], key=f"p1{i}")
+                    phone2 = st.text_input("Phone2", row["Phone No.2"], key=f"p2{i}")
+                    phone3 = st.text_input("Phone3", row["Phone No.3"], key=f"p3{i}")
+
+                    location = st.text_input("Location", row["LOCATION"], key=f"loc{i}")
+                    remarks = st.text_input("Remarks", row["Remarks"], key=f"rem{i}")
+
+                    if st.button(f"💾 Save {i}"):
+                        idx = int(row.name) + 2
+
+                        sheet.update(f"E{idx}", fname)
+                        sheet.update(f"F{idx}", mname)
+                        sheet.update(f"G{idx}", sname)
+                        sheet.update(f"H{idx}", relation)
+                        sheet.update(f"I{idx}", dob)
+                        sheet.update(f"J{idx}", blood)
+                        sheet.update(f"K{idx}", occupation)
+                        sheet.update(f"L{idx}", email)
+                        sheet.update(f"N{idx}", phone1)
+                        sheet.update(f"O{idx}", phone2)
+                        sheet.update(f"P{idx}", phone3)
+                        sheet.update(f"Q{idx}", location)
+                        sheet.update(f"R{idx}", remarks)
+
+                        st.success("Updated")
+                        del st.session_state.edit_index
                         st.rerun()
 
             st.dataframe(group)
 
         else:
             st.error("Not found")
-
-# ---------- EDIT ----------
-if "edit_mode" in st.session_state and st.session_state.edit_mode:
-
-    row = st.session_state.edit_row
-    index = int(st.session_state.edit_index) + 2
-
-    st.subheader("✏️ Edit Member")
-
-    fname = st.text_input("First Name", row["First Name"])
-    sname = st.text_input("Surname", row["Surname"])
-    phone = st.text_input("Phone", row["Phone No.1"])
-    location = st.text_input("Location", row["LOCATION"])
-
-    if st.button("Save Changes"):
-        sheet.update(f"E{index}", fname)
-        sheet.update(f"G{index}", sname)
-        sheet.update(f"N{index}", phone)
-        sheet.update(f"Q{index}", location)
-
-        st.success("Updated Successfully")
-        st.session_state.edit_mode = False
-        st.rerun()
