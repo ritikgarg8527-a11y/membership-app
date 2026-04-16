@@ -126,10 +126,9 @@ elif menu == "Add":
 
     if st.button("Add Member"):
 
-        # VALIDATION
         if member_type == "Primary":
             if not (id_ and user_id and membership and fname and sname and phone1 and location):
-                st.error("Fill all required fields for Primary")
+                st.error("Fill required fields for Primary")
                 st.stop()
 
         if member_type == "Family":
@@ -137,8 +136,11 @@ elif menu == "Add":
                 st.error("Fill required fields for Family")
                 st.stop()
 
-        # ADD NEW ROW (FIXED)
-        sheet.append_row([
+        # ✅ FIXED ROW INSERT (NO OVERWRITE)
+        all_data = sheet.get_all_values()
+        next_row = len(all_data) + 1
+
+        sheet.insert_row([
             clean(id_),
             clean(user_id),
             clean(membership),
@@ -161,7 +163,7 @@ elif menu == "Add":
 
             clean(location),
             clean(remarks)
-        ], value_input_option="USER_ENTERED")
+        ], next_row)
 
         st.success(f"✅ {member_type} Added Successfully")
         st.rerun()
@@ -196,15 +198,15 @@ elif menu == "Search":
                 if col3.button(f"🗑 {i}"):
                     st.session_state.delete_index = int(row.name)
 
-                # DELETE CONFIRM
+                # DELETE
                 if "delete_index" in st.session_state and st.session_state.delete_index == int(row.name):
                     st.warning("Confirm delete?")
                     if st.button(f"Yes {i}"):
-                        sheet.delete_rows(int(row.name) + 2)
+                        sheet.delete_rows(int(row.name)+2)
                         del st.session_state.delete_index
                         st.rerun()
 
-                # EDIT
+                # EDIT (same as before)
                 if "edit_index" in st.session_state and st.session_state.edit_index == int(row.name):
 
                     st.markdown("### ✏️ Edit")
