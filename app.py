@@ -263,7 +263,7 @@ if "edit_index" in st.session_state and st.session_state.edit_index == int(row.n
         del st.session_state.edit_index
         st.success("Updated Successfully")
         st.rerun()
-            st.dataframe(group)
+        st.dataframe(group)
 
         else:
             st.error("No data found")
