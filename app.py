@@ -29,7 +29,7 @@ if "logged_in" not in st.session_state:
 
 if not st.session_state.logged_in:
 
-    st.image(logo, use_container_width=True)
+    st.image(logo, width=600)
 
     st.title("SNVM - Shree Navnat Vanik Mahajan Membership Portal")
 
@@ -70,7 +70,7 @@ def clean(x):
     return str(x)
 
 # ---------- HEADER ----------
-st.image(logo, width=400)
+st.image(logo,use_container_width=True)
 
 st.markdown("""
 <h2 style='text-align: center; margin-top: -20px; 
