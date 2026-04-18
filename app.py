@@ -29,7 +29,7 @@ if "logged_in" not in st.session_state:
 
 if not st.session_state.logged_in:
 
-    st.image(logo, width=600)
+    st.image(logo, width=1200)
 
     st.title("SNVM - Shree Navnat Vanik Mahajan Membership Portal")
 
