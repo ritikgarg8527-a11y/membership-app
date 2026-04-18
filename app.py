@@ -65,7 +65,7 @@ def clean(x):
     return str(x)
 
 # ---------- HEADER ----------
-st.title("🏢 Membership System")
+st.title("🏢 SNVM - Shree Navnat Vanik Mahajan Membership Portal")
 
 menu = st.sidebar.selectbox("Menu", ["Dashboard", "Add", "Search"])
 
