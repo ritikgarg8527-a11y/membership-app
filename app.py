@@ -29,9 +29,7 @@ if "logged_in" not in st.session_state:
 
 if not st.session_state.logged_in:
 
-    col1, col2, col3 = st.columns([1,2,1])
-    with col2:
-        st.image(logo, use_container_width=True)
+    st.image(logo, use_container_width=True)
 
     st.title("SNVM - Shree Navnat Vanik Mahajan Membership Portal")
 
@@ -75,7 +73,7 @@ def clean(x):
 st.image(logo, use_container_width=True)
 
 st.markdown("""
-<h2 style='text-align: center; margin-top: -20px; color: white;'>
+<h2 style='text-align: center; margin-top: -50px; color: black;'>
 SNVM - Shree Navnat Vanik Mahajan Membership Portal
 </h2>
 """, unsafe_allow_html=True)
