@@ -11,13 +11,35 @@ st.set_page_config(page_title="SNVM - Shree Navnat Vanik Mahajan Membership Port
 # ---------- UI ----------
 st.markdown("""
 <style>
-.card {
-    padding: 16px;
+.banner {
+    position: relative;
+    text-align: center;
+}
+
+.banner img {
+    width: 100%;
     border-radius: 10px;
-    border: 1px solid rgba(128,128,128,0.2);
-    margin-bottom: 10px;
+}
+
+.banner-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 36px;
+    font-weight: bold;
+    color: white;
 }
 </style>
+""", unsafe_allow_html=True)
+
+st.markdown(f"""
+<div class="banner">
+    <img src="data:image/jpeg;base64,{logo._repr_png_()}" />
+    <div class="banner-text">
+        SNVM - Shree Navnat Vanik Mahajan Membership Portal
+    </div>
+</div>
 """, unsafe_allow_html=True)
 
 # ---------- LOGIN ----------
