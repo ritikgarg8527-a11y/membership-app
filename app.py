@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import gspread
+from PIL import Image
+logo = Image.open("logo.jpeg")
 from google.oauth2.service_account import Credentials
 
 # ---------- PAGE CONFIG ----------
@@ -26,7 +28,12 @@ if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
 if not st.session_state.logged_in:
-    st.title("🔐 Login")
+
+    col1, col2, col3 = st.columns([1,2,1])
+    with col2:
+        st.image(logo, use_container_width=True)
+
+    st.title("SNVM - Shree Navnat Vanik Mahajan Membership Portal")
 
     u = st.text_input("Username")
     p = st.text_input("Password", type="password")
@@ -65,7 +72,13 @@ def clean(x):
     return str(x)
 
 # ---------- HEADER ----------
-st.title("🏢 SNVM - Shree Navnat Vanik Mahajan Membership Portal")
+col1, col2 = st.columns([1,4])
+
+with col1:
+    st.image(logo, width=120)
+
+with col2:
+    st.title("SNVM - Shree Navnat Vanik Mahajan Membership Portal")
 
 menu = st.sidebar.selectbox("Menu", ["Dashboard", "Add", "Search"])
 
