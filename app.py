@@ -4,7 +4,7 @@ import gspread
 from google.oauth2.service_account import Credentials
 
 # ---------- PAGE CONFIG ----------
-st.set_page_config(page_title="Membership System", layout="wide")
+st.set_page_config(page_title="SNVM - Shree Navnat Vanik Mahajan Membership Portal", layout="wide")
 
 # ---------- UI ----------
 st.markdown("""
