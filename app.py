@@ -11,35 +11,13 @@ st.set_page_config(page_title="SNVM - Shree Navnat Vanik Mahajan Membership Port
 # ---------- UI ----------
 st.markdown("""
 <style>
-.banner {
-    position: relative;
-    text-align: center;
-}
-
-.banner img {
-    width: 100%;
+.card {
+    padding: 16px;
     border-radius: 10px;
-}
-
-.banner-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 36px;
-    font-weight: bold;
-    color: white;
+    border: 1px solid rgba(128,128,128,0.2);
+    margin-bottom: 10px;
 }
 </style>
-""", unsafe_allow_html=True)
-
-st.markdown(f"""
-<div class="banner">
-    <img src="data:image/jpeg;base64,{logo._repr_png_()}" />
-    <div class="banner-text">
-        SNVM - Shree Navnat Vanik Mahajan Membership Portal
-    </div>
-</div>
 """, unsafe_allow_html=True)
 
 # ---------- LOGIN ----------
@@ -94,13 +72,14 @@ def clean(x):
     return str(x)
 
 # ---------- HEADER ----------
-st.image(logo, use_container_width=True)
+col1, col2 = st.columns([1,4])
 
-st.markdown("""
-<h2 style='text-align: center; margin-top: -20px; color: white;'>
-SNVM - Shree Navnat Vanik Mahajan Membership Portal
-</h2>
-""", unsafe_allow_html=True)
+with col1:
+    st.image(logo, width=120)
+
+with col2:
+    st.title("SNVM - Shree Navnat Vanik Mahajan Membership Portal")
+
 menu = st.sidebar.selectbox("Menu", ["Dashboard", "Add", "Search"])
 
 # ---------- DASHBOARD ----------
