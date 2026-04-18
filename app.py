@@ -73,7 +73,7 @@ def clean(x):
 st.image(logo, use_container_width=True)
 
 st.markdown("""
-<h2 style='text-align: center; margin-top: -20px; color: white;'>
+<h2 style='text-align: center; margin-top: -20px; color: blue;'>
 SNVM - Shree Navnat Vanik Mahajan Membership Portal
 </h2>
 """, unsafe_allow_html=True)
