@@ -70,7 +70,7 @@ def clean(x):
     return str(x)
 
 # ---------- HEADER ----------
-st.image(logo, use_container_width=True)
+st.image(logo, width=400)
 
 st.markdown("""
 <h2 style='text-align: center; margin-top: -20px; 
