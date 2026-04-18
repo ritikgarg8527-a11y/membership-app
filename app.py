@@ -72,13 +72,13 @@ def clean(x):
     return str(x)
 
 # ---------- HEADER ----------
-col1, col2 = st.columns([1,4])
+st.image(logo, use_container_width=True)
 
-with col1:
-    st.image(logo, width=120)
-
-with col2:
-    st.title("SNVM - Shree Navnat Vanik Mahajan Membership Portal")
+st.markdown("""
+<h2 style='text-align: center; margin-top: -20px; color: white;'>
+SNVM - Shree Navnat Vanik Mahajan Membership Portal
+</h2>
+""", unsafe_allow_html=True)
 
 menu = st.sidebar.selectbox("Menu", ["Dashboard", "Add", "Search"])
 
