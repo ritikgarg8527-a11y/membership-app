@@ -246,8 +246,7 @@ elif menu == "Search/Edit":
                         membership_no = str(row["MemberShip No"])
 
                         # ✅ UPDATE ONLY CURRENT LOCATION
-                        sheet.update(f"Q{idx}", clean(location))
-
+                        sheet.update(f"Q{idx}", [[clean(location)]])
                         # ✅ IF PRIMARY → UPDATE FAMILY LOCATION
                         if row["Type"] == "Primary":
 
@@ -257,8 +256,7 @@ elif menu == "Search/Edit":
                                 if str(r["MemberShip No"]) == membership_no and r["Type"] == "Family":
 
                                     family_row_index = j + 2
-                                    sheet.update(f"Q{family_row_index}", clean(location))
-
+                                    sheet.update(f"Q{family_row_index}", [[clean(location)]])
                         del st.session_state.edit_index
                         st.success("Address Updated for Primary + Family")
                         st.rerun()
