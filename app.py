@@ -243,7 +243,7 @@ elif menu == "Search/Edit":
                     if st.button(f"💾 Save {i}"):
 
                            idx = int(row.name) + 2
-                            membership_no = str(row["MemberShip No"])
+                           membership_no = str(row["MemberShip No"])
 
                           # ✅ ONLY UPDATE LOCATION FOR CURRENT ROW
                            sheet.update(f"Q{idx}", clean(location))
