@@ -80,7 +80,7 @@ SNVM - Shree Navnat Vanik Mahajan Membership Portal
 </h2>
 """, unsafe_allow_html=True)
 
-menu = st.sidebar.selectbox("Menu", ["Dashboard","Add", "Search"])
+menu = st.sidebar.selectbox("Menu", ["Dashboard", "Search/Edit", "Add"])
 
 # ---------- DASHBOARD ----------
 if menu == "Dashboard":
@@ -181,7 +181,7 @@ elif menu == "Add":
         st.rerun()
 
 # ---------- SEARCH ----------
-elif menu == "Search":
+elif menu == "Search/Edit":
 
     m = st.text_input("Membership No")
 
