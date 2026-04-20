@@ -242,27 +242,26 @@ elif menu == "Search/Edit":
 
                     if st.button(f"💾 Save {i}"):
 
-                           idx = int(row.name) + 2
-                           membership_no = str(row["MemberShip No"])
+                        idx = int(row.name) + 2
+                        membership_no = str(row["MemberShip No"])
 
-                          # ✅ ONLY UPDATE LOCATION FOR CURRENT ROW
-                           sheet.update(f"Q{idx}", clean(location))
+                        # ✅ UPDATE ONLY CURRENT LOCATION
+                        sheet.update(f"Q{idx}", clean(location))
 
-                        # ✅ IF PRIMARY → UPDATE ALL FAMILY LOCATION
-                         if row["Type"] == "Primary":
+                        # ✅ IF PRIMARY → UPDATE FAMILY LOCATION
+                        if row["Type"] == "Primary":
 
-                       all_data = sheet.get_all_records()
+                            all_data = sheet.get_all_records()
 
-                       for j, r in enumerate(all_data):
-                        if str(r["MemberShip No"]) == membership_no and r["Type"] == "Family":
+                            for j, r in enumerate(all_data):
+                                if str(r["MemberShip No"]) == membership_no and r["Type"] == "Family":
 
-                          family_row_index = j + 2
-                        sheet.update(f"Q{family_row_index}", clean(location))
+                                    family_row_index = j + 2
+                                    sheet.update(f"Q{family_row_index}", clean(location))
 
                         del st.session_state.edit_index
                         st.success("Address Updated for Primary + Family")
-                      st.rerun()
-
+                        st.rerun()
                         idx = int(row.name) + 2
 
                         row_data = [
