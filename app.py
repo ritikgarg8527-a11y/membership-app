@@ -127,7 +127,7 @@ elif menu == "Add":
         blood = st.text_input("Blood Group")
         occupation = st.text_input("Occupation")
 
-        email = st.text_input("Email")
+        email = st.text_input("Email *")
         box = st.text_input("Box No")
 
         phone1 = st.text_input("Phone No.1 *")
@@ -140,12 +140,12 @@ elif menu == "Add":
     if st.button("Add Member"):
 
         if member_type == "Primary":
-            if not (id_ and user_id and membership and fname and sname and phone1 and location):
+            if not (id_ and user_id and membership and fname and sname and phone1 and location and email):
                 st.error("Fill required fields for Primary")
                 st.stop()
 
         if member_type == "Family":
-            if not (fname and sname and phone1 and location):
+            if not (fname and sname and phone1 and location and email):
                 st.error("Fill required fields for Family")
                 st.stop()
 
