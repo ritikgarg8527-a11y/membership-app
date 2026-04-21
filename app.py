@@ -100,6 +100,9 @@ if menu == "Dashboard":
 
 # ---------- ADD ----------
 elif menu == "Add":
+    add_access = False   # ❌ Change to True when allowed
+    if not add_access:
+    st.warning("🚫 Access Restricted: Please take permission from Management")
     st.subheader("➕ Add Member")
 
     member_type = st.selectbox("Select Member Type", ["Primary", "Family"])
@@ -137,7 +140,7 @@ elif menu == "Add":
         location = st.text_input("Location *")
         remarks = st.text_input("Remarks")
 
-    if st.button("Add Member"):
+    if st.button("Add Member", disabled=not add_access):
 
         if member_type == "Primary":
             if not (id_ and user_id and membership and fname and sname and phone1 and location and email):
