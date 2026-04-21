@@ -102,7 +102,7 @@ if menu == "Dashboard":
 elif menu == "Add":
     add_access = False   # ❌ Change to True when allowed
     if not add_access:
-    st.warning("🚫 Access Restricted: Please take permission from Management")
+        st.warning("🚫 Access Restricted: Please take permission from Management")
     st.subheader("➕ Add Member")
 
     member_type = st.selectbox("Select Member Type", ["Primary", "Family"])
