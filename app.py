@@ -100,7 +100,7 @@ if menu == "Dashboard":
 
 # ---------- ADD ----------
 elif menu == "Add":
-    add_access = True   # ❌ Change to True when allowed
+    add_access = False   # ❌ Change to True when allowed
     if not add_access:
         st.warning("🚫 Access Restricted: Please take permission from Management")
     st.subheader("➕ Add Member")
