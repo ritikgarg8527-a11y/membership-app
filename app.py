@@ -108,7 +108,7 @@ elif menu == "Add":
     padding: 18px;
     border-radius: 10px;
     text-align: center;
-    font-size: 20px;
+    font-size: 24px;
     font-weight: bold;
     color: white;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
