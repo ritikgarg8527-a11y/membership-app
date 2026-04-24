@@ -101,10 +101,23 @@ if menu == "Dashboard":
 # ---------- ADD ----------
 elif menu == "Add":
     add_access = False   # ❌ Change to True when allowed
-    if not add_access:
-      st.warning("🚫 Access Restricted: Please take permission from Management")
+    
     st.subheader("➕ Add Member")
-
+    if not add_access:
+      st.markdown("""
+<div style="
+    background: linear-gradient(135deg, #6b8e23, #556b2f);
+    padding: 18px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+">
+🚫 Access Restricted: Please take permission from Management
+</div>
+""", unsafe_allow_html=True)
     member_type = st.selectbox("Select Member Type", ["Primary", "Family"])
 
     col1, col2 = st.columns(2)
