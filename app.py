@@ -216,9 +216,15 @@ elif menu == "Search/Edit":
                     <div class='card'>
                     <b>{row['First Name']} {row['Surname']} ({row['Type']})</b><br>
                     📞 {row['Phone No.1']} <br>
-                    📍 {row['LOCATION']}
+                    📍 {row['LOCATION']} <br>
+                    🟢 Updated: {row.get('Updated (YES/NO)', 'NO')} <br>
+                    📅 Last Updated: {row.get('Last Updated Date', 'N/A')}
                     </div>
                     """, unsafe_allow_html=True)
+                    if row["Updated (YES/NO)"] == "YES":
+                        st.success("Updated")
+                    else:
+                        st.warning("Not Updated")
 
                 if col2.button(f"✏️ {i}"):
                     st.session_state.edit_index = int(row.name)
@@ -257,6 +263,8 @@ elif menu == "Search/Edit":
                     remarks = st.text_input("Remarks", row["Remarks"], key=f"re{i}")
 
                     if st.button(f"💾 Save {i}"):
+                        from datetime import datetime   # ✅ ADD HERE
+                        current_time = datetime.now().strftime("%Y-%m-%d %H:%M")   # ✅ ADD HERE
 
                         idx = int(row.name) + 2
                         membership_no = str(row["MemberShip No"])
@@ -284,10 +292,12 @@ elif menu == "Search/Edit":
                             clean(phone3),
 
                             clean(location),
-                            clean(remarks)
+                            clean(remarks),
+                            "YES",              # ✅ Updated flag
+                            current_time        # ✅ Timestamp
                         ]
 
-                        sheet.update(f"A{idx}:R{idx}", [row_data])
+                        sheet.update(f"A{idx}:T{idx}", [row_data])
 
                         # -------- AUTO SYNC FAMILY ADDRESS --------
                         if row["Type"] == "Primary":
