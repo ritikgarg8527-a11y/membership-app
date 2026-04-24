@@ -303,3 +303,4 @@ elif menu == "Search/Edit":
                         del st.session_state.edit_index
                         st.success("Updated Successfully (Primary + Family Address Synced)")
                         st.rerun()
+          st.dataframe(group)
