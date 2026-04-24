@@ -237,79 +237,92 @@ elif menu == "Search/Edit":
                 # ---------- FULL EDIT ----------
                 if "edit_index" in st.session_state and st.session_state.edit_index == int(row.name):
 
-                    st.markdown("### ✏️ Edit Full Details")
+    st.markdown("### ✏️ Edit Details")
 
-                    fname = st.text_input("First Name", row["First Name"], key=f"f{i}")
-                    mname = st.text_input("Middle Name", row["MiddleName"], key=f"m{i}")
-                    sname = st.text_input("Surname", row["Surname"], key=f"s{i}")
-                    relation = st.text_input("Relation", row["Relation"], key=f"r{i}")
+    # ✅ MODE SELECTOR
+    mode = st.radio(
+        "Select Edit Mode",
+        ["Address Only", "Full Edit"],
+        horizontal=True,
+        key=f"mode_{i}"
+    )
 
-                    dob = st.text_input("DOB", clean(row["DateOfBirth"]), key=f"d{i}")
-                    blood = st.text_input("Blood Group", row["Blood Group"], key=f"b{i}")
-                    occupation = st.text_input("Occupation", row["Occupation"], key=f"o{i}")
+    # ---------- COMMON FIELD ----------
+    location = st.text_input("Location", row["LOCATION"], key=f"l{i}")
 
-                    email = st.text_input("Email", row["E-mail"], key=f"e{i}")
-                    phone1 = st.text_input("Phone No.1", row["Phone No.1"], key=f"p1{i}")
-                    phone2 = st.text_input("Phone No.2", row["Phone No.2"], key=f"p2{i}")
-                    phone3 = st.text_input("Phone No.3", row["Phone No.3"], key=f"p3{i}")
+    # ---------- FULL EDIT FIELDS ----------
+    if mode == "Full Edit":
 
-                    location = st.text_input("Location", row["LOCATION"], key=f"l{i}")
-                    remarks = st.text_input("Remarks", row["Remarks"], key=f"re{i}")
+        fname = st.text_input("First Name", row["First Name"], key=f"f{i}")
+        mname = st.text_input("Middle Name", row["MiddleName"], key=f"m{i}")
+        sname = st.text_input("Surname", row["Surname"], key=f"s{i}")
+        relation = st.text_input("Relation", row["Relation"], key=f"r{i}")
 
-                    if st.button(f"💾 Save {i}"):
+        dob = st.text_input("DOB", clean(row["DateOfBirth"]), key=f"d{i}")
+        blood = st.text_input("Blood Group", row["Blood Group"], key=f"b{i}")
+        occupation = st.text_input("Occupation", row["Occupation"], key=f"o{i}")
 
-                        idx = int(row.name) + 2
-                        membership_no = str(row["MemberShip No"])
+        email = st.text_input("Email", row["E-mail"], key=f"e{i}")
+        phone1 = st.text_input("Phone No.1", row["Phone No.1"], key=f"p1{i}")
+        phone2 = st.text_input("Phone No.2", row["Phone No.2"], key=f"p2{i}")
+        phone3 = st.text_input("Phone No.3", row["Phone No.3"], key=f"p3{i}")
 
-                        # ✅ UPDATE ONLY CURRENT LOCATION
-                        sheet.update(f"Q{idx}", [[clean(location)]])
-                        # ✅ IF PRIMARY → UPDATE FAMILY LOCATION
-                        if row["Type"] == "Primary":
+        remarks = st.text_input("Remarks", row["Remarks"], key=f"re{i}")
 
-                            all_data = sheet.get_all_records()
+    # ---------- SAVE BUTTON ----------
+    if st.button(f"💾 Save {i}"):
 
-                            for j, r in enumerate(all_data):
-                                if str(r["MemberShip No"]) == membership_no and r["Type"] == "Family":
+        idx = int(row.name) + 2
+        membership_no = str(row["MemberShip No"])
 
-                                    family_row_index = j + 2
-                                    sheet.update(f"Q{family_row_index}", [[clean(location)]])
-                        del st.session_state.edit_index
-                        st.success("Address Updated for Primary + Family")
-                        st.rerun()
-                        idx = int(row.name) + 2
+        # ===== MODE 1: ADDRESS ONLY =====
+        if mode == "Address Only":
 
-                        row_data = [
-                            clean(row["Id"]),
-                            clean(row["user_id"]),
-                            clean(row["MemberShip No"]),
-                            clean(row["Type"]),
+            sheet.update(f"Q{idx}", [[clean(location)]])
 
-                            clean(fname),
-                            clean(mname),
-                            clean(sname),
-                            clean(relation),
+            if row["Type"] == "Primary":
 
-                            clean(dob),
-                            clean(blood),
-                            clean(occupation),
-                            clean(email),
+                all_data = sheet.get_all_records()
 
-                            clean(row["Box No."]),
-                            clean(phone1),
-                            clean(phone2),
-                            clean(phone3),
+                for j, r in enumerate(all_data):
+                    if str(r["MemberShip No"]) == membership_no and r["Type"] == "Family":
 
-                            clean(location),
-                            clean(remarks)
-                        ]
+                        family_row_index = j + 2
+                        sheet.update(f"Q{family_row_index}", [[clean(location)]])
 
-                        sheet.update(f"A{idx}:R{idx}", [row_data])
+            st.success("Address Updated (Primary + Family Sync)")
 
-                        del st.session_state.edit_index
-                        st.success("Updated Successfully")
-                        st.rerun()
-
-            st.dataframe(group)
-
+        # ===== MODE 2: FULL EDIT =====
         else:
-            st.error("No data found")
+
+            row_data = [
+                clean(row["Id"]),
+                clean(row["user_id"]),
+                clean(row["MemberShip No"]),
+                clean(row["Type"]),
+
+                clean(fname),
+                clean(mname),
+                clean(sname),
+                clean(relation),
+
+                clean(dob),
+                clean(blood),
+                clean(occupation),
+                clean(email),
+
+                clean(row["Box No."]),
+                clean(phone1),
+                clean(phone2),
+                clean(phone3),
+
+                clean(location),
+                clean(remarks)
+            ]
+
+            sheet.update(f"A{idx}:R{idx}", [row_data])
+
+            st.success("Full Record Updated")
+
+        del st.session_state.edit_index
+        st.rerun()
