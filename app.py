@@ -258,53 +258,53 @@ elif menu == "Search/Edit":
 
                     if st.button(f"💾 Save {i}"):
 
-                        idx = int(row.name) + 2
-    			membership_no = str(row["MemberShip No"])
+                           idx = int(row.name) + 2
+    			           membership_no = str(row["MemberShip No"])
 
-    			# -------- FULL UPDATE --------
-    			row_data = [
-        			clean(row["Id"]),
-        			clean(row["user_id"]),
-        			clean(row["MemberShip No"]),
-        			clean(row["Type"]),
+    			            # -------- FULL UPDATE --------
+    			            row_data = [
+        			            clean(row["Id"]),
+        			            clean(row["user_id"]),
+        			            clean(row["MemberShip No"]),
+        			            clean(row["Type"]),
 
-        			clean(fname),
-        			clean(mname),
-        			clean(sname),
-        			clean(relation),
+        			            clean(fname),
+        			            clean(mname),
+        			            clean(sname),
+        			            clean(relation),
 
-        			clean(dob),
-        			clean(blood),
-        			clean(occupation),
-        			clean(email),
+        			            clean(dob),
+        			            clean(blood),
+        			            clean(occupation),
+        			            clean(email),
 
-        			clean(row["Box No."]),
-        			clean(phone1),
-        			clean(phone2),
-        			clean(phone3),
+        			            clean(row["Box No."]),
+        			            clean(phone1),
+        			            clean(phone2),
+        			            clean(phone3),
 
-        			clean(location),
-        			clean(remarks)
-    			]
+        			            clean(location),
+        			            clean(remarks)
+    			            ]
 
-    			sheet.update(f"A{idx}:R{idx}", [row_data])
+    			            sheet.update(f"A{idx}:R{idx}", [row_data])
 
-    			# -------- AUTO SYNC FAMILY ADDRESS --------
-    			if row["Type"] == "Primary":
+    			            # -------- AUTO SYNC FAMILY ADDRESS --------
+    			            if row["Type"] == "Primary":
 
-        			all_data = sheet.get_all_records()
+        			            all_data = sheet.get_all_records()
 
-        			for j, r in enumerate(all_data):
-            				if str(r["MemberShip No"]) == membership_no and r["Type"] == "Family":
+        			            for j, r in enumerate(all_data):
+            				        if str(r["MemberShip No"]) == membership_no and r["Type"] == "Family":
 
-                				family_row_index = j + 2
+                				        family_row_index = j + 2
 
-                				# ✅ ONLY UPDATE LOCATION COLUMN (Q)
-                				sheet.update(f"Q{family_row_index}", [[clean(location)]])
+                				        # ✅ ONLY UPDATE LOCATION COLUMN (Q)
+                				        sheet.update(f"Q{family_row_index}", [[clean(location)]])
 
-    				del st.session_state.edit_index
-    				st.success("Updated Successfully (Primary + Family Address Synced)")
-    				st.rerun()
+    				            del st.session_state.edit_index
+    				            st.success("Updated Successfully (Primary + Family Address Synced)")
+    				            st.rerun()
             st.dataframe(group)
 
         else:
