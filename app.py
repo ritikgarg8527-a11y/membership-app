@@ -237,40 +237,40 @@ elif menu == "Search/Edit":
                 # ---------- FULL EDIT ----------
                 if "edit_index" in st.session_state and st.session_state.edit_index == int(row.name):
 
-    st.markdown("### ✏️ Edit Details")
+                   st.markdown("### ✏️ Edit Details")
 
-    # ✅ MODE SELECTOR
-    mode = st.radio(
-        "Select Edit Mode",
-        ["Address Only", "Full Edit"],
-        horizontal=True,
-        key=f"mode_{i}"
-    )
+                    # ✅ MODE SELECTOR
+                   mode = st.radio(
+                   "Select Edit Mode",
+                    ["Address Only", "Full Edit"],
+                    horizontal=True,
+                    key=f"mode_{i}"
+                 )
 
-    # ---------- COMMON FIELD ----------
-    location = st.text_input("Location", row["LOCATION"], key=f"l{i}")
+                  # ---------- COMMON FIELD ----------
+                 location = st.text_input("Location", row["LOCATION"], key=f"l{i}")
 
-    # ---------- FULL EDIT FIELDS ----------
-    if mode == "Full Edit":
+                    # ---------- FULL EDIT FIELDS ----------
+               if mode == "Full Edit":
 
-        fname = st.text_input("First Name", row["First Name"], key=f"f{i}")
-        mname = st.text_input("Middle Name", row["MiddleName"], key=f"m{i}")
-        sname = st.text_input("Surname", row["Surname"], key=f"s{i}")
-        relation = st.text_input("Relation", row["Relation"], key=f"r{i}")
+                   fname = st.text_input("First Name", row["First Name"], key=f"f{i}")
+                   mname = st.text_input("Middle Name", row["MiddleName"], key=f"m{i}")
+                   sname = st.text_input("Surname", row["Surname"], key=f"s{i}")
+                   relation = st.text_input("Relation", row["Relation"], key=f"r{i}")
 
-        dob = st.text_input("DOB", clean(row["DateOfBirth"]), key=f"d{i}")
-        blood = st.text_input("Blood Group", row["Blood Group"], key=f"b{i}")
-        occupation = st.text_input("Occupation", row["Occupation"], key=f"o{i}")
+                  dob = st.text_input("DOB", clean(row["DateOfBirth"]), key=f"d{i}")
+                  blood = st.text_input("Blood Group", row["Blood Group"], key=f"b{i}")
+                  occupation = st.text_input("Occupation", row["Occupation"], key=f"o{i}")
 
-        email = st.text_input("Email", row["E-mail"], key=f"e{i}")
-        phone1 = st.text_input("Phone No.1", row["Phone No.1"], key=f"p1{i}")
-        phone2 = st.text_input("Phone No.2", row["Phone No.2"], key=f"p2{i}")
-        phone3 = st.text_input("Phone No.3", row["Phone No.3"], key=f"p3{i}")
+                  email = st.text_input("Email", row["E-mail"], key=f"e{i}")
+                  phone1 = st.text_input("Phone No.1", row["Phone No.1"], key=f"p1{i}")
+                  phone2 = st.text_input("Phone No.2", row["Phone No.2"], key=f"p2{i}")
+                  phone3 = st.text_input("Phone No.3", row["Phone No.3"], key=f"p3{i}")
 
-        remarks = st.text_input("Remarks", row["Remarks"], key=f"re{i}")
+                 remarks = st.text_input("Remarks", row["Remarks"], key=f"re{i}")
 
-    # ---------- SAVE BUTTON ----------
-    if st.button(f"💾 Save {i}"):
+             # ---------- SAVE BUTTON ----------
+             if st.button(f"💾 Save {i}"):
 
         idx = int(row.name) + 2
         membership_no = str(row["MemberShip No"])
