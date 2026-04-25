@@ -263,8 +263,11 @@ elif menu == "Search/Edit":
                     remarks = st.text_input("Remarks", row["Remarks"], key=f"re{i}")
 
                     if st.button(f"💾 Save {i}"):
-                        from datetime import datetime   # ✅ ADD HERE
-                        current_time = datetime.now().strftime("%Y-%m-%d %H:%M")   # ✅ ADD HERE
+                        from datetime import datetime
+                        import pytz
+
+                        tz = pytz.timezone("Africa/Nairobi")
+                        current_time = datetime.now(tz).strftime("%d-%b-%Y | %I:%M %p")
 
                         idx = int(row.name) + 2
                         membership_no = str(row["MemberShip No"])
